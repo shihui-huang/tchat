@@ -1,0 +1,235 @@
+<!--
+The course material is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+The course material is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+Initial developer(s): Denis Conan
+Contributor(s):
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>eu.telecomsudparis.csc4509</groupId>
+  <artifactId>csc4509-tchat-prenom1Nom1-prenom2Nom2</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>Solution of group Prenom1 Nom1, Prenom2 Nom2</name>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <repositories>
+    <repository>
+      <id>tsp-csc-checkstyle-config-stable</id>
+      <name>TSP CSC Checkstyle configuration, stable</name>
+      <url>http://www-inf.telecom-sudparis.eu/COURS/CSC4102/maven-repository/stable/</url>
+    </repository>
+    <repository>
+      <id>tsp-csc-checkstyle-config-snapshot</id>
+      <name>TSP CSC Checkstyle configuration, snapshot</name>
+      <url>http://www-inf.telecom-sudparis.eu/COURS/CSC4102/maven-repository/snapshot/</url>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>eu.telecomsudparis.csc</groupId>
+      <artifactId>tsp-csc-config-checkstyle</artifactId>
+      <version>1.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <!-- enforce JDK version >= 10 and Maven version >= 3.5 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M3</version>
+        <executions>
+          <execution>
+            <id>enforce-versions</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[10,)</version>
+                  <message>
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+You need a JDK version >= 10 and a Maven version >= 3.5
+Javadoc generation has some problems in JAVA 9
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</message>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[3.5,)</version>
+                  <message>You need Maven 3.5 or later</message>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- maven-eclipse configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.10</version>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+      <!-- java compiler configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>${java.specification.version}</source>
+          <target>${java.specification.version}</target>
+        </configuration>
+      </plugin>
+      <!-- surefire configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.19.1</version>
+        <configuration>
+          <enableAssertions>true</enableAssertions>
+	  <reuseForks>false</reuseForks>
+          <forkCount>1</forkCount>
+        </configuration>
+      </plugin>
+      <!-- classes packaging configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- source packaging configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- javadoc configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <source>${java.specification.version}</source>
+        </configuration>
+      </plugin>
+      <!-- spotbugs configuration -->
+      <plugin>
+      	<groupId>com.github.spotbugs</groupId>
+      	<artifactId>spotbugs-maven-plugin</artifactId>
+      	<version>4.0.0</version>
+        <configuration>
+          <maxRank>15</maxRank>
+        </configuration>
+      </plugin>
+      <!-- checkstyle configuration -->
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-checkstyle-plugin</artifactId>
+	<version>3.1.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>eu.telecomsudparis.csc</groupId>
+            <artifactId>tsp-csc-config-checkstyle</artifactId>
+	    <version>1.1-SNAPSHOT</version>
+          </dependency>
+        </dependencies>
+	<configuration>
+	  <configLocation>config/checkstyle/sun_checks_adapted_to_tsp_csc_pour_eclipse_2019_09.xml</configLocation>
+	  <encoding>UTF-8</encoding>
+	  <consoleOutput>true</consoleOutput>
+	  <failsOnError>false</failsOnError>
+	  <linkXRef>false</linkXRef>
+	</configuration>
+      </plugin>
+      <!-- site configuration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.9.0</version>
+        <configuration>
+          <locales>fr</locales>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- reports in the maven site -->
+  <reporting>
+    <plugins>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-project-info-reports-plugin</artifactId>
+      	<version>3.0.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <source>10</source>
+        </configuration>
+      </plugin>
+      <plugin>
+      	<groupId>com.github.spotbugs</groupId>
+      	<artifactId>spotbugs-maven-plugin</artifactId>
+      	<version>4.0.0</version>
+        <configuration>
+          <maxRank>15</maxRank>
+        </configuration>
+      </plugin>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-checkstyle-plugin</artifactId>
+	<version>3.1.1</version>
+	<configuration>
+	  <configLocation>config/checkstyle/sun_checks_adapted_to_tsp_csc_pour_eclipse_2019_09.xml</configLocation>
+	  <encoding>UTF-8</encoding>
+	  <consoleOutput>true</consoleOutput>
+	  <failsOnError>false</failsOnError>
+	  <linkXRef>false</linkXRef>
+	</configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>

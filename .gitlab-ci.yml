@@ -1,0 +1,5 @@
+variables:
+  GIT_STRATEGY: clone
+job1:
+  script: "source /etc/profile.d/maven.sh; mvn clean install spotbugs:check checkstyle:check javadoc:javadoc"
+  tags: ['2020']
