@@ -16,10 +16,10 @@ Contributor(s):
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.telecomsudparis.csc4509</groupId>
-  <artifactId>csc4509-tchat-prenom1Nom1-prenom2Nom2</artifactId>
+  <artifactId>csc4509-tchat-shihuiHuang-bastienSun</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>Solution of group Prenom1 Nom1, Prenom2 Nom2</name>
+  <name>Solution of group Shihui Huang, Bastien Sun</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
