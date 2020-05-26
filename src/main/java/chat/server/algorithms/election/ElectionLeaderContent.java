@@ -41,22 +41,22 @@ public class ElectionLeaderContent extends ServerToServerMsgContent {
 	 */
 	private static final long serialVersionUID = 1L;
 	/**
-	 * identité du parent lors de la réception
+	 * identité du parent lors de la réception.
 	 */
 	private final int sender;
 	/**
-	 * identité de l'initiateur de la vague
+	 * identité de l'initiateur de la vague.
 	 */
 	private final int initiator;
 
 	/**
 	 * constructs the content of a leader election message.
-	 * 
-	 * @param sender         the identity of the sender.
+	 *
+	 * @param sender    the identity of the sender.
+	 * @param initiator the initiator
 	 */
 	public ElectionLeaderContent(final int sender, final int initiator) {
 		super(sender, Arrays.asList(sender));
-		// TODO implement
 		this.sender = sender;
 		this.initiator = initiator;
 	}
@@ -66,15 +66,20 @@ public class ElectionLeaderContent extends ServerToServerMsgContent {
 		return sender;
 	}
 
+	/**
+	 * Gets initiator.
+	 *
+	 * @return the initiator
+	 */
 	public int getInitiator() {
 		return initiator;
 	}
 
 	@Override
 	public String toString() {
-		return "ElectionLeaderContent{" +
-				"sender=" + sender +
-				", initiator=" + initiator +
-				'}';
+		return "ElectionLeaderContent{"
+				+ "sender=" + sender
+				+ ", initiator=" + initiator
+				+ '}';
 	}
 }

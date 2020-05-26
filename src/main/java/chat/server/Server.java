@@ -143,13 +143,27 @@ public class Server implements Entity {
 	 * not reordered (an assumption of TCP network links).
 	 */
 	private final Map<Integer, Integer> sequenceNumberOfLocalClients;
+
 	/**
-	 * variables de l'algorithme
+	 * variables de l'algorithme.
+     * numéro de processus de la vague active (en anglais,currently active wave).
 	 */
 	private int caw;
+	/**
+	 * parent dans la vague "caw".
+	 */
 	private int parent;
+	/**
+	 * identité du processus gagnant.
+	 */
 	private int win;
+	/**
+	 * nombre de messages "jeton" reçus.
+	 */
 	private int rec;
+	/**
+	 * nombre de messages "gagnant" reçus.
+	 */
 	private int lrec;
 	/**
 	 *
@@ -750,8 +764,8 @@ public class Server implements Entity {
 		if (this.caw == content.getInitiator()) {
 			this.rec++;
 			if (this.rec == this.getNumberOfNeighbouringServers()) {
-				if (this.caw == this.identity){
-					ElectionLeaderContent leaderContent = new ElectionLeaderContent(this.identity,this.identity);
+				if (this.caw == this.identity) {
+					ElectionLeaderContent leaderContent = new ElectionLeaderContent(this.identity, this.identity);
 					sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(LEADER_MESSAGE), leaderContent);
 				} else {
 					ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, content.getInitiator());
