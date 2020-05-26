@@ -811,4 +811,13 @@ public class Server implements Entity {
 
 		assert invariant();
 	}
+
+	/**
+	 * Gets status.
+	 *
+	 * @return the status
+	 */
+	public ElectionStatus getStatus() {
+		return status;
+	}
 }
