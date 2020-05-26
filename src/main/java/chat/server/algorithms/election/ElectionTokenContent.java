@@ -27,20 +27,12 @@ import chat.server.algorithms.ServerToServerMsgContent;
 
 /**
  * This class defines the content of a token message of the election algorithm.
- * 
- * TODO add attributes.
- * 
- * TODO implement the constructor.
- * 
- * TODO add getters.
- * 
+ *
  * TODO perhaps, add the methods equals and hashCode? (if necessary)
- * 
- * TODO add the toString method.
- * 
- * TODO add your names in the list of authors.
- * 
+ *
  * @author Denis Conan
+ * @author Shihui Huang
+ * @author Bastien Sun
  *
  */
 public class ElectionTokenContent extends ServerToServerMsgContent {
@@ -48,15 +40,42 @@ public class ElectionTokenContent extends ServerToServerMsgContent {
 	 * version number for serialisation.
 	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * identité du parent lors de la réception
+	 */
+	private final int sender;
+	/**
+	 * identité de l'initiateur de la vague
+	 */
+	private final int initiator;
 
 	/**
 	 * constructs the content of a leader election message.
-	 * 
+	 *
 	 * @param sender
 	 *            the identity of the sender.
 	 */
-	public ElectionTokenContent(final int sender) {
+	public ElectionTokenContent(final int sender, final int initiator) {
 		super(sender, Arrays.asList(sender));
 		// TODO implement
+		this.sender = sender;
+		this.initiator = initiator;
+	}
+
+	@Override
+	public int getSender() {
+		return sender;
+	}
+
+	public int getInitiator() {
+		return initiator;
+	}
+
+	@Override
+	public String toString() {
+		return "ElectionTokenContent{" +
+				"sender=" + sender +
+				", initiator=" + initiator +
+				'}';
 	}
 }
