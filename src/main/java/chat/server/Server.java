@@ -60,6 +60,7 @@ import chat.common.ReadMessageStatus;
 import chat.common.Scenario;
 import chat.server.algorithms.ServerAlgorithm;
 import chat.server.algorithms.election.ElectionLeaderContent;
+import chat.server.algorithms.election.ElectionStatus;
 import chat.server.algorithms.election.ElectionTokenContent;
 import chat.server.algorithms.topology.IdentityContent;
 
@@ -150,7 +151,10 @@ public class Server implements Entity {
 	private int win;
 	private int rec;
 	private int lrec;
-	private String status;
+	/**
+	 *
+	 */
+	private ElectionStatus status;
 
 	/**
 	 * initialises the collection attributes and the state of the server, and
@@ -249,7 +253,7 @@ public class Server implements Entity {
 		this.win = -1;
 		this.rec = 0;
 		this.lrec = 0;
-		this.status = "dormant";
+		this.status = ElectionStatus.DORMANT;
 
 		assert invariant();
 	}
@@ -480,7 +484,7 @@ public class Server implements Entity {
 		}
 
 		// LaunchElection
-		this.status = "initiator";
+		this.status = ElectionStatus.INITIATOR;
 		this.caw = this.identity;
 		ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, this.identity);
 		sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
@@ -776,9 +780,9 @@ public class Server implements Entity {
 
 		if (this.lrec == this.getNumberOfNeighbouringServers()) {
 			if (this.win == this.identity) {
-				this.status = "leader";
+				this.status = ElectionStatus.LEADER;
 			} else {
-				this.status = "non-leader";
+				this.status = ElectionStatus.NON_LEADER;
 			}
 		}
 
