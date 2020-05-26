@@ -140,6 +140,15 @@ public class Server implements Entity {
 	 * not reordered (an assumption of TCP network links).
 	 */
 	private final Map<Integer, Integer> sequenceNumberOfLocalClients;
+	/**
+	 * variables de l'algorithme
+	 */
+	private int caw;
+	private int parent;
+	private int win;
+	private int rec;
+	private int lrec;
+	private String status;
 
 	/**
 	 * initialises the collection attributes and the state of the server, and
@@ -231,6 +240,15 @@ public class Server implements Entity {
 		// -1 since there is no neighbouring server to exclude
 		sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(IDENTITY_MESSAGE),
 				new IdentityContent(identity(), new ArrayList<>()));
+
+		// initialisation des variables de l'algorithme
+		this.caw = -1;
+		this.parent = -1;
+		this.win = -1;
+		this.rec = 0;
+		this.lrec = 0;
+		this.status = "dormant";
+
 		assert invariant();
 	}
 
