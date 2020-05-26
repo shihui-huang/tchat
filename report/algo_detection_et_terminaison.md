@@ -1,5 +1,5 @@
 
-##### Prénom1 Nom1 et Prénom2 Nom2
+##### Shihui Huang et Bastien Sun
 
 ---
 
