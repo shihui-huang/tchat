@@ -766,7 +766,22 @@ public class Server implements Entity {
 	 * @param content the content of the message to treat.
 	 */
 	public synchronized void receiveElectionLeaderContent(final ElectionLeaderContent content) {
-		// TODO to write. Please remove this comment when the method is implemented!
+		if (this.lrec == 0 && this.identity != content.getInitiator()) {
+			ElectionLeaderContent leaderContent = new ElectionLeaderContent(this.identity, content.getInitiator());
+			sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(LEADER_MESSAGE), leaderContent);
+		}
+
+		this.lrec++;
+		this.win = content.getInitiator();
+
+		if (this.lrec == this.getNumberOfNeighbouringServers()) {
+			if (this.win == this.identity) {
+				this.status = "leader";
+			} else {
+				this.status = "non-leader";
+			}
+		}
+
 		assert invariant();
 	}
 }
