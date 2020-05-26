@@ -25,6 +25,7 @@ import static chat.common.Log.COMM;
 import static chat.common.Log.GEN;
 import static chat.common.Log.LOG_ON;
 import static chat.common.Log.TOPO;
+import static chat.server.algorithms.election.ElectionAction.TOKEN_MESSAGE;
 import static chat.server.algorithms.topology.TopologyAction.IDENTITY_MESSAGE;
 
 import java.io.IOException;
@@ -476,6 +477,13 @@ public class Server implements Entity {
 				Thread.currentThread().interrupt();
 			}
 		}
+
+		// LaunchElection
+		this.status = "initiator";
+		this.caw = this.identity;
+		ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, this.identity);
+		sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
+
 		assert invariant();
 	}
 
