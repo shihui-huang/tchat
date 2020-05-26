@@ -25,6 +25,7 @@ import static chat.common.Log.COMM;
 import static chat.common.Log.GEN;
 import static chat.common.Log.LOG_ON;
 import static chat.common.Log.TOPO;
+import static chat.server.algorithms.election.ElectionAction.LEADER_MESSAGE;
 import static chat.server.algorithms.election.ElectionAction.TOKEN_MESSAGE;
 import static chat.server.algorithms.topology.TopologyAction.IDENTITY_MESSAGE;
 
@@ -734,7 +735,27 @@ public class Server implements Entity {
 	 * @param content the content of the message to treat.
 	 */
 	public synchronized void receiveElectionTokenContent(final ElectionTokenContent content) {
-		// TODO to write. Please remove this comment when the method is implemented!
+        if (this.caw == -1 || content.getInitiator() < this.caw) {
+			this.caw = content.getInitiator();
+			this.rec = 0;
+			this.parent = content.getSender();
+			ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, content.getInitiator());
+			sendToAllNeighbouringServersExceptOne(this.parent, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
+		}
+
+		if (this.caw == content.getInitiator()) {
+			this.rec++;
+			if (this.rec == this.getNumberOfNeighbouringServers()) {
+				if (this.caw == this.identity){
+					ElectionLeaderContent leaderContent = new ElectionLeaderContent(this.identity,this.identity);
+					sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(LEADER_MESSAGE), leaderContent);
+				} else {
+					ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, content.getInitiator());
+					sendToAServer(this.parent, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
+				}
+			}
+		}
+
 		assert invariant();
 	}
 
