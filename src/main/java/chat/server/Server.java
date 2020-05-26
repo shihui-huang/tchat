@@ -22,6 +22,7 @@ Contributor(s):
 package chat.server;
 
 import static chat.common.Log.COMM;
+import static chat.common.Log.ELECTION;
 import static chat.common.Log.GEN;
 import static chat.common.Log.LOG_ON;
 import static chat.common.Log.TOPO;
@@ -753,6 +754,10 @@ public class Server implements Entity {
 	 * @param content the content of the message to treat.
 	 */
 	public synchronized void receiveElectionTokenContent(final ElectionTokenContent content) {
+		if (LOG_ON && ELECTION.isInfoEnabled()) {
+			ELECTION.trace("réception: " + content.toString());
+		}
+
         if (this.caw == -1 || content.getInitiator() < this.caw) {
 			this.caw = content.getInitiator();
 			this.rec = 0;
@@ -784,6 +789,10 @@ public class Server implements Entity {
 	 * @param content the content of the message to treat.
 	 */
 	public synchronized void receiveElectionLeaderContent(final ElectionLeaderContent content) {
+		if (LOG_ON && ELECTION.isInfoEnabled()) {
+			ELECTION.trace("réception: " + content.toString());
+		}
+
 		if (this.lrec == 0 && this.identity != content.getInitiator()) {
 			ElectionLeaderContent leaderContent = new ElectionLeaderContent(this.identity, content.getInitiator());
 			sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(LEADER_MESSAGE), leaderContent);
