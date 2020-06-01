@@ -261,7 +261,6 @@ public class Server implements Entity {
 		// -1 since there is no neighbouring server to exclude
 		sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(IDENTITY_MESSAGE),
 				new IdentityContent(identity(), new ArrayList<>()));
-
 		// initialisation des variables de l'algorithme
 		this.caw = -1;
 		this.parent = -1;
@@ -269,7 +268,6 @@ public class Server implements Entity {
 		this.rec = 0;
 		this.lrec = 0;
 		this.status = ElectionStatus.DORMANT;
-
 		assert invariant();
 	}
 
@@ -497,13 +495,11 @@ public class Server implements Entity {
 				Thread.currentThread().interrupt();
 			}
 		}
-
 		// LaunchElection
 		this.status = ElectionStatus.INITIATOR;
 		this.caw = this.identity;
 		ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, this.identity);
 		sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
-
 		assert invariant();
 	}
 
@@ -757,7 +753,6 @@ public class Server implements Entity {
 		if (LOG_ON && ELECTION.isInfoEnabled()) {
 			ELECTION.trace("réception: " + content.toString());
 		}
-
         if (this.caw == -1 || content.getInitiator() < this.caw) {
 			this.caw = content.getInitiator();
 			this.rec = 0;
@@ -765,7 +760,6 @@ public class Server implements Entity {
 			ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, content.getInitiator());
 			sendToAllNeighbouringServersExceptOne(this.parent, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
 		}
-
 		if (this.caw == content.getInitiator()) {
 			this.rec++;
 			if (this.rec == this.getNumberOfNeighbouringServers()) {
@@ -778,7 +772,6 @@ public class Server implements Entity {
 				}
 			}
 		}
-
 		assert invariant();
 	}
 
@@ -792,15 +785,12 @@ public class Server implements Entity {
 		if (LOG_ON && ELECTION.isInfoEnabled()) {
 			ELECTION.trace("réception: " + content.toString());
 		}
-
 		if (this.lrec == 0 && this.identity != content.getInitiator()) {
 			ElectionLeaderContent leaderContent = new ElectionLeaderContent(this.identity, content.getInitiator());
 			sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(LEADER_MESSAGE), leaderContent);
 		}
-
 		this.lrec++;
 		this.win = content.getInitiator();
-
 		if (this.lrec == this.getNumberOfNeighbouringServers()) {
 			if (this.win == this.identity) {
 				this.status = ElectionStatus.LEADER;
@@ -808,7 +798,6 @@ public class Server implements Entity {
 				this.status = ElectionStatus.NON_LEADER;
 			}
 		}
-
 		assert invariant();
 	}
 
