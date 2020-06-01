@@ -495,11 +495,13 @@ public class Server implements Entity {
 				Thread.currentThread().interrupt();
 			}
 		}
-		// LaunchElection
-		this.status = ElectionStatus.INITIATOR;
-		this.caw = this.identity;
-		ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, this.identity);
-		sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
+		if (line.equals("election")) {
+			// LaunchElection
+			this.status = ElectionStatus.INITIATOR;
+			this.caw = this.identity;
+			ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, this.identity);
+			sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
+		}
 		assert invariant();
 	}
 
