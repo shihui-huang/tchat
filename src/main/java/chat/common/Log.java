@@ -97,6 +97,14 @@ public final class Log {
 	 * logger object for the election algorithm.
 	 */
 	public static final Logger ELECTION = Logger.getLogger(LOGGER_NAME_ELECTION);
+	/**
+	 * name of logger for the election algorithm.
+	 */
+	public static final String LOGGER_NAME_DIFFUSION = "diffusion";
+	/**
+	 * logger object for the diffusion algorithm.
+	 */
+	public static final Logger DIFFUSION = Logger.getLogger(LOGGER_NAME_DIFFUSION);
 
 	/*
 	 * static configuration, which can be changed by command line options.
@@ -110,6 +118,7 @@ public final class Log {
 		TEST.setLevel(Level.WARN);
 		CHAT.setLevel(Level.INFO); // no System.out.println, but only logging at info level
 		ELECTION.setLevel(Level.WARN);
+		DIFFUSION.setLevel(Level.WARN);
 	}
 
 	/**
@@ -142,6 +151,8 @@ public final class Log {
 			CHAT.setLevel(level);
 		} else if (loggerName.equalsIgnoreCase(LOGGER_NAME_ELECTION)) {
 			ELECTION.setLevel(level);
+		}else if (loggerName.equalsIgnoreCase(LOGGER_NAME_DIFFUSION)){
+			DIFFUSION.setLevel(level);
 		}
 	}
 
