@@ -28,8 +28,6 @@ import chat.server.algorithms.ServerToServerMsgContent;
 /**
  * This class defines the content of a leader message of the election algorithm.
  * 
- * TODO perhaps, add the methods equals and hashCode? (if necessary)
- * 
  * @author Denis Conan
  * @author Shihui Huang
  * @author Bastien Sun
