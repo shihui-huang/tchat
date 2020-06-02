@@ -495,7 +495,7 @@ public class Server implements Entity {
 				Thread.currentThread().interrupt();
 			}
 		}
-		if (line.equals("election")) {
+		if (line.equals("election") && this.status == ElectionStatus.DORMANT) {
 			// LaunchElection
 			this.status = ElectionStatus.INITIATOR;
 			this.caw = this.identity;

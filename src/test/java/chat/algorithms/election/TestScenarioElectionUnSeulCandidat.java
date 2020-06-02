@@ -53,7 +53,7 @@ public class TestScenarioElectionUnSeulCandidat extends Scenario {
         if (LOG_ON && TEST.isInfoEnabled()) {
             TEST.info("starting the test of the algorithms...");
         }
-        emulateAnInputLineFromTheConsoleForAServer(s1, "launch election");
+        emulateAnInputLineFromTheConsoleForAServer(s1, "election");
         if (LOG_ON && TEST.isInfoEnabled()) {
             TEST.info("end of the scenario.");
         }
