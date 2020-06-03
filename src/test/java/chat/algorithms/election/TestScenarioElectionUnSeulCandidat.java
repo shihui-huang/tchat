@@ -1,17 +1,12 @@
 package chat.algorithms.election;
 
-import chat.common.Interceptors;
 import chat.common.Log;
 import chat.common.Scenario;
 import chat.server.Server;
 import chat.server.algorithms.election.ElectionStatus;
-import chat.server.algorithms.election.ElectionTokenContent;
 import org.apache.log4j.Level;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import static chat.common.Log.*;
 import static chat.common.Log.TEST;
@@ -43,12 +38,6 @@ public class TestScenarioElectionUnSeulCandidat extends Scenario {
         sleep(500);
         Server s6 = instanciateAServer("6 localhost 3");
         sleep(500);
-
-        Interceptors.setInterceptionEnabled(true);
-        Predicate<ElectionTokenContent> conditionForInterceptingI1OnS2 = msg -> msg.getSender() == s1.identity();
-        Predicate<ElectionTokenContent> conditionForExecutingI1OnS2 = msg -> true;
-        Consumer<ElectionTokenContent> treatmentI1OnS2 = msg -> chat.server.algorithms.election.ElectionAction.TOKEN_MESSAGE.execute(s2, msg);
-        Interceptors.addAnInterceptor("i1", s2, conditionForInterceptingI1OnS2, conditionForExecutingI1OnS2, treatmentI1OnS2);
 
         if (LOG_ON && TEST.isInfoEnabled()) {
             TEST.info("starting the test of the algorithms...");
