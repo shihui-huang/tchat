@@ -65,6 +65,13 @@ public class TestScenarioElectionUnSeulCandidat extends Scenario {
         Assert.assertEquals(ElectionStatus.NON_LEADER, s5.getStatus());
         Assert.assertEquals(ElectionStatus.NON_LEADER, s6.getStatus());
 
+        Assert.assertEquals(s1.identity(), s1.getWin());
+        Assert.assertEquals(s1.identity(), s2.getWin());
+        Assert.assertEquals(s1.identity(), s3.getWin());
+        Assert.assertEquals(s1.identity(), s4.getWin());
+        Assert.assertEquals(s1.identity(), s5.getWin());
+        Assert.assertEquals(s1.identity(), s6.getWin());
+
         // finish properly
         emulateAnInputLineFromTheConsoleForAServer(s1, "quit");
         sleep(100);

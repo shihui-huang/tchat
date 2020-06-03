@@ -829,4 +829,14 @@ public class Server implements Entity {
 	public ElectionStatus getStatus() {
 		return status;
 	}
+
+	/**
+	 * Gets win.
+	 *
+	 * @return the win
+	 */
+	public int getWin() {
+		return win;
+	}
+
 }
