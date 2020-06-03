@@ -501,6 +501,9 @@ public class Server implements Entity {
 			this.caw = this.identity;
 			ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, this.identity);
 			sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
+			if (LOG_ON && ELECTION.isInfoEnabled()) {
+				ELECTION.trace(Log.computeServerLogMessage(this, "sendToAllNeighbouringServers: " + tokenContent));
+			}
 		}
 		assert invariant();
 	}
@@ -753,7 +756,7 @@ public class Server implements Entity {
 	 */
 	public synchronized void receiveElectionTokenContent(final ElectionTokenContent content) {
 		if (LOG_ON && ELECTION.isInfoEnabled()) {
-			ELECTION.trace("réception: " + content.toString());
+			ELECTION.trace(Log.computeServerLogMessage(this, "receive: " + content.toString()));
 		}
         if (this.caw == -1 || content.getInitiator() < this.caw) {
 			this.caw = content.getInitiator();
@@ -761,6 +764,9 @@ public class Server implements Entity {
 			this.parent = content.getSender();
 			ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, content.getInitiator());
 			sendToAllNeighbouringServersExceptOne(this.parent, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
+			if (LOG_ON && ELECTION.isInfoEnabled()) {
+				ELECTION.trace(Log.computeServerLogMessage(this, "sendToAllNeighbouringServersExceptParent: " + tokenContent.toString()));
+			}
 		}
 		if (this.caw == content.getInitiator()) {
 			this.rec++;
@@ -768,9 +774,15 @@ public class Server implements Entity {
 				if (this.caw == this.identity) {
 					ElectionLeaderContent leaderContent = new ElectionLeaderContent(this.identity, this.identity);
 					sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(LEADER_MESSAGE), leaderContent);
+					if (LOG_ON && ELECTION.isInfoEnabled()) {
+						ELECTION.trace(Log.computeServerLogMessage(this, "sendToAllNeighbouringServers: " + leaderContent.toString()));
+					}
 				} else {
 					ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, content.getInitiator());
 					sendToAServer(this.parent, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
+					if (LOG_ON && ELECTION.isInfoEnabled()) {
+						ELECTION.trace(Log.computeServerLogMessage(this, "sendToParent: " + tokenContent.toString()));
+					}
 				}
 			}
 		}
@@ -785,11 +797,14 @@ public class Server implements Entity {
 	 */
 	public synchronized void receiveElectionLeaderContent(final ElectionLeaderContent content) {
 		if (LOG_ON && ELECTION.isInfoEnabled()) {
-			ELECTION.trace("réception: " + content.toString());
+			ELECTION.trace(Log.computeServerLogMessage(this, "receive: " + content.toString()));
 		}
 		if (this.lrec == 0 && this.identity != content.getInitiator()) {
 			ElectionLeaderContent leaderContent = new ElectionLeaderContent(this.identity, content.getInitiator());
 			sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(LEADER_MESSAGE), leaderContent);
+			if (LOG_ON && ELECTION.isInfoEnabled()) {
+				ELECTION.trace(Log.computeServerLogMessage(this, "sendToAllNeighbouringServers: " + leaderContent.toString()));
+			}
 		}
 		this.lrec++;
 		this.win = content.getInitiator();
@@ -798,6 +813,9 @@ public class Server implements Entity {
 				this.status = ElectionStatus.LEADER;
 			} else {
 				this.status = ElectionStatus.NON_LEADER;
+			}
+			if (LOG_ON && ELECTION.isInfoEnabled()) {
+				ELECTION.trace(Log.computeServerLogMessage(this, "status=" + this.status));
 			}
 		}
 		assert invariant();
