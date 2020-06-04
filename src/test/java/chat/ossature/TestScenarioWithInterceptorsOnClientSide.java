@@ -34,6 +34,7 @@ import static chat.common.Log.TEST;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import chat.common.VectorClock;
 import org.apache.log4j.Level;
 import org.junit.Assert;
 import org.junit.Test;
@@ -87,14 +88,14 @@ public class TestScenarioWithInterceptorsOnClientSide extends Scenario {
 		Predicate<ChatMsgContent> conditionForExecutingI1OnC1 = msg -> true;
 		Consumer<ChatMsgContent> treatmentI1OnC1 = msg -> chat.client.algorithms.chat.ChatAction.CHAT_MESSAGE
 				.execute(c1, new ChatMsgContent(msg.getSender(), msg.getSequenceNumber(),
-						msg.getContent() + ", intercepted at client c1 by i1"));
+						msg.getContent() + ", intercepted at client c1 by i1", new VectorClock(msg.getVectorClock())));
 		Interceptors.addAnInterceptor("i1", c1, conditionForInterceptingI1OnC1, conditionForExecutingI1OnC1,
 				treatmentI1OnC1);
 		Predicate<ChatMsgContent> conditionForInterceptingI2OnC2 = msg -> msg.getSender() == c0.identity();
 		Predicate<ChatMsgContent> conditionForExecutingI2OnC2 = msg -> true;
 		Consumer<ChatMsgContent> treatmentI2OnC2 = msg -> chat.client.algorithms.chat.ChatAction.CHAT_MESSAGE
 				.execute(c2, new ChatMsgContent(msg.getSender(), msg.getSequenceNumber(),
-						msg.getContent() + ", intercepted at client c2 by i2"));
+						msg.getContent() + ", intercepted at client c2 by i2", new VectorClock(msg.getVectorClock())));
 		Interceptors.addAnInterceptor("i2", c2, conditionForInterceptingI2OnC2, conditionForExecutingI2OnC2,
 				treatmentI2OnC2);
 		Predicate<ChatMsgContent> conditionForInterceptingI3OnC1 = msg -> msg.getSender() == c2.identity();
@@ -103,12 +104,12 @@ public class TestScenarioWithInterceptorsOnClientSide extends Scenario {
 		Predicate<ChatMsgContent> conditionForExecutingI3OnC1 = msg -> false;
 		Consumer<ChatMsgContent> treatmentI3OnC1 = msg -> chat.client.algorithms.chat.ChatAction.CHAT_MESSAGE
 				.execute(c1, new ChatMsgContent(msg.getSender(), msg.getSequenceNumber(),
-						msg.getContent() + ", intercepted at client c1 by i3"));
+						msg.getContent() + ", intercepted at client c1 by i3", new VectorClock(msg.getVectorClock())));
 		Interceptors.addAnInterceptor("i3", c1, conditionForInterceptingI3OnC1, conditionForExecutingI3OnC1,
 				treatmentI3OnC1);
 		Consumer<ChatMsgContent> treatmentI4OnC1 = msg -> chat.client.algorithms.chat.ChatAction.CHAT_MESSAGE
 				.execute(c1, new ChatMsgContent(msg.getSender(), msg.getSequenceNumber(),
-						msg.getContent() + ", intercepted at client c1 by i4"));
+						msg.getContent() + ", intercepted at client c1 by i4", new VectorClock(msg.getVectorClock())));
 		// useless interceptor since the condition of the interception is the same as
 		// the one of i1
 		// ---i.e. i4 is stored after i1 in the list of interceptors, and messages that
