@@ -755,7 +755,7 @@ public class Server implements Entity {
 	 * @param content the content of the message to treat.
 	 */
 	public synchronized void receiveElectionTokenContent(final ElectionTokenContent content) {
-		if (LOG_ON && ELECTION.isInfoEnabled()) {
+		if (LOG_ON && ELECTION.isTraceEnabled()) {
 			ELECTION.trace(Log.computeServerLogMessage(this, "receive: " + content.toString()));
 		}
         if (this.caw == -1 || content.getInitiator() < this.caw) {
@@ -764,7 +764,7 @@ public class Server implements Entity {
 			this.parent = content.getSender();
 			ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, content.getInitiator());
 			sendToAllNeighbouringServersExceptOne(this.parent, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
-			if (LOG_ON && ELECTION.isInfoEnabled()) {
+			if (LOG_ON && ELECTION.isTraceEnabled()) {
 				ELECTION.trace(Log.computeServerLogMessage(this, "sendToAllNeighbouringServersExceptParent: " + tokenContent.toString()));
 			}
 		}
@@ -774,13 +774,13 @@ public class Server implements Entity {
 				if (this.caw == this.identity) {
 					ElectionLeaderContent leaderContent = new ElectionLeaderContent(this.identity, this.identity);
 					sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(LEADER_MESSAGE), leaderContent);
-					if (LOG_ON && ELECTION.isInfoEnabled()) {
+					if (LOG_ON && ELECTION.isTraceEnabled()) {
 						ELECTION.trace(Log.computeServerLogMessage(this, "sendToAllNeighbouringServers: " + leaderContent.toString()));
 					}
 				} else {
 					ElectionTokenContent tokenContent = new ElectionTokenContent(this.identity, content.getInitiator());
 					sendToAServer(this.parent, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
-					if (LOG_ON && ELECTION.isInfoEnabled()) {
+					if (LOG_ON && ELECTION.isTraceEnabled()) {
 						ELECTION.trace(Log.computeServerLogMessage(this, "sendToParent: " + tokenContent.toString()));
 					}
 				}
@@ -792,17 +792,17 @@ public class Server implements Entity {
 	/**
 	 * treats a leader message of the election algorithm.<br>
 	 * The actions of an algorithm are atomic. So, this method is synchronised.
-	 * 
+	 *
 	 * @param content the content of the message to treat.
 	 */
 	public synchronized void receiveElectionLeaderContent(final ElectionLeaderContent content) {
-		if (LOG_ON && ELECTION.isInfoEnabled()) {
+		if (LOG_ON && ELECTION.isTraceEnabled()) {
 			ELECTION.trace(Log.computeServerLogMessage(this, "receive: " + content.toString()));
 		}
 		if (this.lrec == 0 && this.identity != content.getInitiator()) {
 			ElectionLeaderContent leaderContent = new ElectionLeaderContent(this.identity, content.getInitiator());
 			sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(LEADER_MESSAGE), leaderContent);
-			if (LOG_ON && ELECTION.isInfoEnabled()) {
+			if (LOG_ON && ELECTION.isTraceEnabled()) {
 				ELECTION.trace(Log.computeServerLogMessage(this, "sendToAllNeighbouringServers: " + leaderContent.toString()));
 			}
 		}
@@ -814,7 +814,7 @@ public class Server implements Entity {
 			} else {
 				this.status = ElectionStatus.NON_LEADER;
 			}
-			if (LOG_ON && ELECTION.isInfoEnabled()) {
+			if (LOG_ON && ELECTION.isTraceEnabled()) {
 				ELECTION.trace(Log.computeServerLogMessage(this, "status=" + this.status));
 			}
 		}
