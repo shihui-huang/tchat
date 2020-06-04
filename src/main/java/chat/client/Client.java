@@ -39,6 +39,7 @@ import chat.client.algorithms.chat.ChatMsgContent;
 import chat.common.Entity;
 import chat.common.Log;
 import chat.common.Scenario;
+import chat.common.VectorClock;
 import chat.server.Server;
 
 /**
@@ -75,6 +76,11 @@ public class Client implements Entity {
 	 * number of chat messages sent.
 	 */
 	private int nbChatMsgContentSent;
+	/**
+	 * vertorClock.
+	 */
+	private VectorClock vectorClock;
+
 
 	/**
 	 * constructs a client with a connection to the chat server. The connection to
@@ -114,6 +120,7 @@ public class Client implements Entity {
 		}
 		runnableToRcvMsgs = new ReadMessagesFromNetwork(rwChan, this);
 		threadToRcvMsgs = new Thread(runnableToRcvMsgs);
+		vectorClock = new VectorClock();
 		assert invariant();
 	}
 
@@ -193,7 +200,7 @@ public class Client implements Entity {
 			}
 		} else {
 			synchronized (this) {
-				ChatMsgContent msg = new ChatMsgContent(identity(), getNbChatMsgContentSent(), line);
+				ChatMsgContent msg = new ChatMsgContent(identity(), getNbChatMsgContentSent(), line, new VectorClock(vectorClock));
 				if (LOG_ON && CHAT.isInfoEnabled()) {
 					CHAT.info(Log.computeClientLogMessage(this, " sending chat message: " + msg));
 				}
@@ -233,6 +240,10 @@ public class Client implements Entity {
 			}
 			assert invariant();
 		}
+	}
+
+	public VectorClock getVectorClock() {
+		return vectorClock;
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import static chat.common.Log.LOG_ON;
 import java.util.Objects;
 
 import chat.common.MsgContent;
+import chat.common.VectorClock;
 
 /**
  * This class defines the content of a chat message.
@@ -47,6 +48,10 @@ public class ChatMsgContent extends MsgContent {
 	 * the sequence number.
 	 */
 	private final int sequenceNumber;
+	/**
+	 * the vectorClock.
+	 */
+	private VectorClock vectorClock;
 
 	/**
 	 * constructs the message.
@@ -58,11 +63,12 @@ public class ChatMsgContent extends MsgContent {
 	 * @param content
 	 *            the content of the message.
 	 */
-	public ChatMsgContent(final int idSender, final int seqNumber, final String content) {
+	public ChatMsgContent(final int idSender, final int seqNumber, final String content, final VectorClock vectorClock) {
 		super(idSender);
 		Objects.requireNonNull(content, "argument content cannot be null");
 		this.sequenceNumber = seqNumber;
 		this.content = content;
+		this.vectorClock = vectorClock;
 		assert invariant();
 	}
 
@@ -94,6 +100,15 @@ public class ChatMsgContent extends MsgContent {
 	 */
 	public int getSequenceNumber() {
 		return sequenceNumber;
+	}
+
+	/**
+	 * Gets vector clock.
+	 *
+	 * @return the vector clock
+	 */
+	public VectorClock getVectorClock() {
+		return vectorClock;
 	}
 
 	@Override
