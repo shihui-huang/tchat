@@ -151,7 +151,7 @@ public final class Log {
 			CHAT.setLevel(level);
 		} else if (loggerName.equalsIgnoreCase(LOGGER_NAME_ELECTION)) {
 			ELECTION.setLevel(level);
-		}else if (loggerName.equalsIgnoreCase(LOGGER_NAME_DIFFUSION)){
+		} else if (loggerName.equalsIgnoreCase(LOGGER_NAME_DIFFUSION)) {
 			DIFFUSION.setLevel(level);
 		}
 	}

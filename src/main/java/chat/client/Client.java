@@ -270,6 +270,11 @@ public class Client implements Entity {
 		}
 	}
 
+	/**
+	 * Gets vector clock.
+	 *
+	 * @return the vector clock
+	 */
 	public VectorClock getVectorClock() {
 		return vectorClock;
 	}

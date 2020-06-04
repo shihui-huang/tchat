@@ -55,13 +55,11 @@ public class ChatMsgContent extends MsgContent {
 
 	/**
 	 * constructs the message.
-	 * 
-	 * @param idSender
-	 *            the identifier of the sender.
-	 * @param seqNumber
-	 *            the sequence number of the message.
-	 * @param content
-	 *            the content of the message.
+	 *
+	 * @param idSender    the identifier of the sender.
+	 * @param seqNumber   the sequence number of the message.
+	 * @param content     the content of the message.
+	 * @param vectorClock the vector clock
 	 */
 	public ChatMsgContent(final int idSender, final int seqNumber, final String content, final VectorClock vectorClock) {
 		super(idSender);
