@@ -28,6 +28,7 @@ import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 
 import chat.client.algorithms.ClientAlgorithm;
 import chat.client.algorithms.chat.ChatAction;
@@ -241,13 +242,29 @@ public class Client implements Entity {
 	public synchronized void receiveChatMsgContent(final ChatMsgContent content) {
 		Objects.requireNonNull(content, "argument content cannot be null");
 		synchronized (this) {
+			if (LOG_ON && DIFFUSION.isTraceEnabled()) {
+				DIFFUSION.trace(Log.computeClientLogMessage(this, ", receive: " + content));
+			}
 			// due to the forwarding of messages through multiple paths, a client may
 			// receive its own message => exclude it
 			if (content.getSender() != identity()) {
-				if (LOG_ON && CHAT.isInfoEnabled()) {
-					CHAT.info(Log.computeClientLogMessage(this, " receives " + content));
-				}
 				nbChatMsgContentReceived++;
+				msgBag.add(content);
+				while (msgBag.stream().anyMatch(m -> this.vectorClock.isGreaterOrEquals(m.getVectorClock()))) {
+					Optional<ChatMsgContent> msg = msgBag.stream().filter(m -> this.vectorClock.isGreaterOrEquals(m.getVectorClock())).findFirst();
+					if (msg.isPresent() && this.vectorClock.isGreaterOrEquals(msg.get().getVectorClock())) {
+						// start deliver
+						if (LOG_ON && CHAT.isInfoEnabled()) {
+							CHAT.info(Log.computeClientLogMessage(this, " receives " + content));
+						}
+						// end deliver
+						if (LOG_ON && DIFFUSION.isTraceEnabled()) {
+							DIFFUSION.trace(Log.computeClientLogMessage(this, ", deliver: " + content));
+						}
+						this.vectorClock.incrementEntry(msg.get().getSender());
+						msgBag.remove(msg.get());
+					}
+				}
 			}
 			assert invariant();
 		}
