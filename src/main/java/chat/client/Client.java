@@ -31,6 +31,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
+import java.util.HashSet;
 import java.util.Objects;
 
 import chat.client.algorithms.ClientAlgorithm;
@@ -77,6 +78,10 @@ public class Client implements Entity {
 	 */
 	private int nbChatMsgContentSent;
 	/**
+	 * messageBag.
+	 */
+	private HashSet<ChatMsgContent> msgBag;
+	/**
 	 * vertorClock.
 	 */
 	private VectorClock vectorClock;
@@ -120,6 +125,7 @@ public class Client implements Entity {
 		}
 		runnableToRcvMsgs = new ReadMessagesFromNetwork(rwChan, this);
 		threadToRcvMsgs = new Thread(runnableToRcvMsgs);
+		msgBag = new HashSet<>();
 		vectorClock = new VectorClock();
 		assert invariant();
 	}
