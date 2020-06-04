@@ -21,11 +21,6 @@ Contributor(s):
  */
 package chat.client;
 
-import static chat.common.Log.CHAT;
-import static chat.common.Log.COMM;
-import static chat.common.Log.GEN;
-import static chat.common.Log.LOG_ON;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -42,6 +37,12 @@ import chat.common.Log;
 import chat.common.Scenario;
 import chat.common.VectorClock;
 import chat.server.Server;
+
+import static chat.common.Log.CHAT;
+import static chat.common.Log.COMM;
+import static chat.common.Log.DIFFUSION;
+import static chat.common.Log.GEN;
+import static chat.common.Log.LOG_ON;
 
 /**
  * This class contains the logic of a client of the chat application. It
@@ -213,7 +214,11 @@ public class Client implements Entity {
 				try {
 					long sent = runnableToRcvMsgs.sendMsg(ClientAlgorithm.getActionNumber(ChatAction.CHAT_MESSAGE),
 							identity(), msg);
+					if (LOG_ON && DIFFUSION.isTraceEnabled()) {
+						DIFFUSION.trace(Log.computeClientLogMessage(this, ", broadcast: " + msg));
+					}
 					nbChatMsgContentSent++;
+					vectorClock.incrementEntry(identity());
 					if (LOG_ON && COMM.isDebugEnabled()) {
 						COMM.debug(Log.computeClientLogMessage(this, ", " + sent + " bytes sent."));
 					}
