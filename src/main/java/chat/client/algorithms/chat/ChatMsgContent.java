@@ -112,8 +112,11 @@ public class ChatMsgContent extends MsgContent {
 	@Override
 	public String toString() {
 		if (LOG_ON && CHAT.isDebugEnabled()) {
-			return "sender = " + getSender() + ", sequence number = " + sequenceNumber + ", path = ["
-					+ toStringPath() + "], content = " + content;
+			return "sender = " + getSender()
+					+ ", sequence number = " + sequenceNumber
+					+ ", path = [" + toStringPath()
+					+ "], content = " + content
+					+ ", vectorClock=" + vectorClock;
 		} else {
 			return content;
 		}
