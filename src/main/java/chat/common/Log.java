@@ -98,13 +98,21 @@ public final class Log {
 	 */
 	public static final Logger ELECTION = Logger.getLogger(LOGGER_NAME_ELECTION);
 	/**
-	 * name of logger for the election algorithm.
+	 * name of logger for the diffusion algorithm.
 	 */
 	public static final String LOGGER_NAME_DIFFUSION = "diffusion";
 	/**
 	 * logger object for the diffusion algorithm.
 	 */
 	public static final Logger DIFFUSION = Logger.getLogger(LOGGER_NAME_DIFFUSION);
+	/**
+	 * name of logger for the mutex algorithm.
+	 */
+	public static final String LOGGER_NAME_MUTEX = "mutex";
+	/**
+	 * logger object for the mutex algorithm.
+	 */
+	public static final Logger MUTEX = Logger.getLogger(LOGGER_NAME_MUTEX);
 
 	/*
 	 * static configuration, which can be changed by command line options.
@@ -119,6 +127,7 @@ public final class Log {
 		CHAT.setLevel(Level.INFO); // no System.out.println, but only logging at info level
 		ELECTION.setLevel(Level.WARN);
 		DIFFUSION.setLevel(Level.WARN);
+		MUTEX.setLevel(Level.WARN);
 	}
 
 	/**
@@ -153,8 +162,10 @@ public final class Log {
 			ELECTION.setLevel(level);
 		} else if (loggerName.equalsIgnoreCase(LOGGER_NAME_DIFFUSION)) {
 			DIFFUSION.setLevel(level);
-		}
+		} else if (loggerName.equalsIgnoreCase(LOGGER_NAME_MUTEX)) {
+			MUTEX.setLevel(level);
 	}
+}
 
 	/**
 	 * computes the log message of a client.
