@@ -88,6 +88,7 @@ Conseil&nbsp;: regardez aussi la question qui suit ;-) .
     - 1 serveur, `s_1`
     - 3 clients, `c_1`, `c_2` et `c_3`, connectés au serveur `s_1`
 - Diagrammes temporels souhaitées pour les tests
+
 ![](../birman_joseph_1987.png)
 
 ##### 2.c En utilisant le mécanisme d'interception, écrivez dans une ou deux classes de test les deux scénarios de l'exercice de la [Section 3.4.3 du cours](https://www-inf.telecom-sudparis.eu/COURS/AlgoRep/Web/6.11.15.html), dont vous avez le corrigé mis à disposition dans moodle.
