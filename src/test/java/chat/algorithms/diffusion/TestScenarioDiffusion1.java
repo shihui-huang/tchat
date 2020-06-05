@@ -29,13 +29,13 @@ public class TestScenarioDiffusion1 extends Scenario {
     @Override
     public void constructAndRun() throws Exception {
         Scenario.setIsJUnitScenario(); // mandatory
-        Log.configureALogger(LOGGER_NAME_CHAT, Level.INFO);
-        Log.configureALogger(LOGGER_NAME_INTERCEPT, Level.INFO);
+        Log.configureALogger(LOGGER_NAME_CHAT, Level.WARN);
+        Log.configureALogger(LOGGER_NAME_INTERCEPT, Level.WARN);
         Log.configureALogger(LOGGER_NAME_COMM, Level.WARN);
         Log.configureALogger(LOGGER_NAME_ELECTION, Level.WARN);
-        Log.configureALogger(LOGGER_NAME_DIFFUSION, Level.DEBUG);
+        Log.configureALogger(LOGGER_NAME_DIFFUSION, Level.WARN);
         Log.configureALogger(LOGGER_NAME_GEN, Level.WARN);
-        Log.configureALogger(LOGGER_NAME_TEST, Level.INFO);
+        Log.configureALogger(LOGGER_NAME_TEST, Level.WARN);
 
         if (LOG_ON && TEST.isInfoEnabled()) {
             TEST.info("starting the servers...");
@@ -52,6 +52,7 @@ public class TestScenarioDiffusion1 extends Scenario {
         Client c2 = instanciateAClient(s1.identity());
         sleep(500);
         Client c3 = instanciateAClient(s1.identity());
+        sleep(500);
 
         Interceptors.setInterceptionEnabled(true);
 
@@ -60,7 +61,7 @@ public class TestScenarioDiffusion1 extends Scenario {
         Consumer<ChatMsgContent> treatmentI1OnC3 = msg -> chat.client.algorithms.chat.ChatAction.CHAT_MESSAGE
                 .execute(c3, new ChatMsgContent(msg.getSender(), msg.getSequenceNumber(),
                         msg.getContent() + ", intercepted at client c3 by i1", new VectorClock(msg.getVectorClock())));
-        Interceptors.addAnInterceptor("i1", s1, conditionForInterceptingI1OnC3, conditionForExecutingI1OnC3,
+        Interceptors.addAnInterceptor("i1", c3, conditionForInterceptingI1OnC3, conditionForExecutingI1OnC3,
                 treatmentI1OnC3);
 
         if (LOG_ON && TEST.isInfoEnabled()) {
@@ -91,5 +92,17 @@ public class TestScenarioDiffusion1 extends Scenario {
         Assert.assertTrue(vectorClock.isEqualTo(c1.getVectorClock()));
         Assert.assertTrue(vectorClock.isEqualTo(c2.getVectorClock()));
         Assert.assertTrue(vectorClock.isEqualTo(c3.getVectorClock()));
+
+        // end of the scenario, finish properly
+        emulateAnInputLineFromTheConsoleForAClient(c1, "quit");
+        sleep(100);
+        emulateAnInputLineFromTheConsoleForAClient(c2, "quit");
+        sleep(100);
+        emulateAnInputLineFromTheConsoleForAClient(c3, "quit");
+        sleep(100);
+        emulateAnInputLineFromTheConsoleForAClient(c3, "quit");
+        sleep(100);
+        emulateAnInputLineFromTheConsoleForAServer(s1, "quit");
+        sleep(100);
     }
 }

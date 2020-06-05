@@ -52,15 +52,16 @@ public class TestScenarioDiffusion2 extends Scenario {
         Client c2 = instanciateAClient(s1.identity());
         sleep(500);
         Client c3 = instanciateAClient(s1.identity());
+        sleep(500);
 
         Interceptors.setInterceptionEnabled(true);
 
         Predicate<ChatMsgContent> conditionForInterceptingI1OnC3 = msg -> msg.getSender() == c1.identity();
-        Predicate<ChatMsgContent> conditionForExecutingI1OnC3 = msg -> c1.getVectorClock().getEntry(c1.identity()) == 2;
+        Predicate<ChatMsgContent> conditionForExecutingI1OnC3 = msg -> c1.getVectorClock().getEntry(c1.identity()) == 1;
         Consumer<ChatMsgContent> treatmentI1OnC3 = msg -> chat.client.algorithms.chat.ChatAction.CHAT_MESSAGE
                 .execute(c3, new ChatMsgContent(msg.getSender(), msg.getSequenceNumber(),
                         msg.getContent() + ", intercepted at client c3 by i1", new VectorClock(msg.getVectorClock())));
-        Interceptors.addAnInterceptor("i1", s1, conditionForInterceptingI1OnC3, conditionForExecutingI1OnC3,
+        Interceptors.addAnInterceptor("i1", c3, conditionForInterceptingI1OnC3, conditionForExecutingI1OnC3,
                 treatmentI1OnC3);
 
         if (LOG_ON && TEST.isInfoEnabled()) {
@@ -91,5 +92,17 @@ public class TestScenarioDiffusion2 extends Scenario {
         Assert.assertTrue(vectorClock.isEqualTo(c1.getVectorClock()));
         Assert.assertTrue(vectorClock.isEqualTo(c2.getVectorClock()));
         Assert.assertTrue(vectorClock.isEqualTo(c3.getVectorClock()));
+
+        // finish properly
+        emulateAnInputLineFromTheConsoleForAClient(c1, "quit");
+        sleep(100);
+        emulateAnInputLineFromTheConsoleForAClient(c2, "quit");
+        sleep(100);
+        emulateAnInputLineFromTheConsoleForAClient(c3, "quit");
+        sleep(100);
+        emulateAnInputLineFromTheConsoleForAClient(c3, "quit");
+        sleep(100);
+        emulateAnInputLineFromTheConsoleForAServer(s1, "quit");
+        sleep(100);
     }
 }
