@@ -64,6 +64,7 @@ public class ChatMsgContent extends MsgContent {
 	public ChatMsgContent(final int idSender, final int seqNumber, final String content, final VectorClock vectorClock) {
 		super(idSender);
 		Objects.requireNonNull(content, "argument content cannot be null");
+		Objects.requireNonNull(vectorClock, "argument vectorClock cannot be null");
 		this.sequenceNumber = seqNumber;
 		this.content = content;
 		this.vectorClock = vectorClock;
@@ -79,7 +80,7 @@ public class ChatMsgContent extends MsgContent {
 	 * @return the boolean stating the invariant is maintained.
 	 */
 	public final boolean invariant() {
-		return content != null;
+		return content != null && vectorClock != null;
 	}
 
 	/**
