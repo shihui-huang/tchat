@@ -57,7 +57,7 @@ public class TestScenarioDiffusion2 extends Scenario {
         Interceptors.setInterceptionEnabled(true);
 
         Predicate<ChatMsgContent> conditionForInterceptingI1OnC3 = msg -> msg.getSender() == c1.identity();
-        Predicate<ChatMsgContent> conditionForExecutingI1OnC3 = msg -> c1.getVectorClock().getEntry(c1.identity()) == 1;
+        Predicate<ChatMsgContent> conditionForExecutingI1OnC3 = msg -> c1.getVectorClock().getEntry(c1.identity()) == 1 && msg.getVectorClock().getEntry(c2.identity()) == 0;
         Consumer<ChatMsgContent> treatmentI1OnC3 = msg -> chat.client.algorithms.chat.ChatAction.CHAT_MESSAGE
                 .execute(c3, new ChatMsgContent(msg.getSender(), msg.getSequenceNumber(),
                         msg.getContent() + ", intercepted at client c3 by i1", new VectorClock(msg.getVectorClock())));
