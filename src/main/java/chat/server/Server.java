@@ -25,9 +25,12 @@ import static chat.common.Log.COMM;
 import static chat.common.Log.ELECTION;
 import static chat.common.Log.GEN;
 import static chat.common.Log.LOG_ON;
+import static chat.common.Log.MUTEX;
 import static chat.common.Log.TOPO;
 import static chat.server.algorithms.election.ElectionAction.LEADER_MESSAGE;
 import static chat.server.algorithms.election.ElectionAction.TOKEN_MESSAGE;
+import static chat.server.algorithms.mutex.MutexAction.REQUEST_TOKEN_MESSAGE;
+import static chat.server.algorithms.mutex.MutexAction.SEND_TOKEN_MESSAGE;
 import static chat.server.algorithms.topology.TopologyAction.IDENTITY_MESSAGE;
 
 import java.io.IOException;
@@ -63,6 +66,10 @@ import chat.server.algorithms.ServerAlgorithm;
 import chat.server.algorithms.election.ElectionLeaderContent;
 import chat.server.algorithms.election.ElectionStatus;
 import chat.server.algorithms.election.ElectionTokenContent;
+import chat.server.algorithms.mutex.MutexRequestTokenContent;
+import chat.server.algorithms.mutex.MutexSendTokenContent;
+import chat.server.algorithms.mutex.MutexStatus;
+import chat.server.algorithms.mutex.MutexToken;
 import chat.server.algorithms.topology.IdentityContent;
 
 /**
@@ -146,7 +153,7 @@ public class Server implements Entity {
 	private final Map<Integer, Integer> sequenceNumberOfLocalClients;
 
 	/**
-	 * variables de l'algorithme.
+	 * variables de l'algorithme "élection".
      * numéro de processus de la vague active (en anglais,currently active wave).
 	 */
 	private int caw;
@@ -170,6 +177,24 @@ public class Server implements Entity {
 	 *
 	 */
 	private ElectionStatus status;
+
+	/**
+	 * variable de l'algorithme "exclusion mutuelle".
+	 * horloge.
+	 */
+	private int ns;
+	/**
+	 * demande.
+	 */
+	private Map<Integer, Integer> dem;
+	/**
+	 * jeton.
+	 */
+	private MutexToken jet;
+	/**
+	 * état.
+	 */
+	private MutexStatus mutexStatus;
 
 	/**
 	 * initialises the collection attributes and the state of the server, and
@@ -261,13 +286,18 @@ public class Server implements Entity {
 		// -1 since there is no neighbouring server to exclude
 		sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(IDENTITY_MESSAGE),
 				new IdentityContent(identity(), new ArrayList<>()));
-		// initialisation des variables de l'algorithme
+		// initialisation des variables de l'algorithme "élection"
 		this.caw = -1;
 		this.parent = -1;
 		this.win = -1;
 		this.rec = 0;
 		this.lrec = 0;
 		this.status = ElectionStatus.DORMANT;
+		// initialisaiton des varialbes de l'algorithme "exclusion mutuelle"
+		this.ns = 0;
+		this.dem = new HashMap<>();
+		this.jet = null;
+		this.mutexStatus = MutexStatus.HORS_SC;
 		assert invariant();
 	}
 
@@ -503,6 +533,28 @@ public class Server implements Entity {
 			sendToAllNeighbouringServersExceptOne(-1, ServerAlgorithm.getActionNumber(TOKEN_MESSAGE), tokenContent);
 			if (LOG_ON && ELECTION.isInfoEnabled()) {
 				ELECTION.trace(Log.computeServerLogMessage(this, "sendToAllNeighbouringServers: " + tokenContent));
+			}
+		}
+		if (line.equals("critical section")) {
+		    if (this.jet == null) {
+		    	this.ns++;
+				for (RoutingInformation ri : reachableEntities.values()) {
+					int recipient = ri.getIndentityOfRemoteEntity();
+					MutexRequestTokenContent requestTokenContent = new MutexRequestTokenContent(identity(), recipient, this.ns);
+					if (LOG_ON && MUTEX.isTraceEnabled()) {
+						MUTEX.trace(Log.computeServerLogMessage(this, "sends to server " + ri.getIndentityOfRemoteEntity() + ": " + requestTokenContent));
+					}
+					sendToAServer(recipient, ServerAlgorithm.getActionNumber(REQUEST_TOKEN_MESSAGE), requestTokenContent);
+				}
+				this.mutexStatus = MutexStatus.EN_ATT;
+				if (LOG_ON && MUTEX.isTraceEnabled()) {
+					MUTEX.trace(Log.computeServerLogMessage(this, "en attente à l'entrée de la section critique"));
+				}
+			} else {
+				this.mutexStatus = MutexStatus.DANS_SC;
+				if (LOG_ON && MUTEX.isTraceEnabled()) {
+					MUTEX.trace(Log.computeServerLogMessage(this, "dans la section critique"));
+				}
 			}
 		}
 		assert invariant();
@@ -811,12 +863,104 @@ public class Server implements Entity {
 		if (this.lrec == this.getNumberOfNeighbouringServers()) {
 			if (this.win == this.identity) {
 				this.status = ElectionStatus.LEADER;
+				this.jet = new MutexToken();
+				if (LOG_ON && MUTEX.isTraceEnabled()) {
+					MUTEX.trace(Log.computeServerLogMessage(this, "generates the token"));
+				}
 			} else {
 				this.status = ElectionStatus.NON_LEADER;
 			}
 			if (LOG_ON && ELECTION.isTraceEnabled()) {
 				ELECTION.trace(Log.computeServerLogMessage(this, "status=" + this.status));
 			}
+		}
+		assert invariant();
+	}
+
+	/**
+	 * Send mutex token.
+	 *
+	 * @param remoteServerIdentity the remote server identity
+	 */
+	public synchronized void sendMutexToken(final int remoteServerIdentity) {
+		MutexToken token = new MutexToken(this.jet);
+		token.setEntry(identity(), this.ns);
+		MutexSendTokenContent sendTokenContent = new MutexSendTokenContent(identity(), remoteServerIdentity, this.ns, token);
+		if (LOG_ON && MUTEX.isTraceEnabled()) {
+			MUTEX.trace(Log.computeServerLogMessage(this, "sends token to server " + remoteServerIdentity + ": " + sendTokenContent));
+		}
+		sendToAServer(remoteServerIdentity, ServerAlgorithm.getActionNumber(SEND_TOKEN_MESSAGE), sendTokenContent);
+		this.jet = null;
+	}
+
+	/**
+	 * Exit critical section.
+	 */
+	public synchronized void exitCriticalSection() {
+		if (LOG_ON && MUTEX.isTraceEnabled()) {
+			MUTEX.trace(Log.computeServerLogMessage(this, "exits critical section"));
+		}
+		this.jet.setEntry(identity(), this.ns);
+		this.mutexStatus = MutexStatus.HORS_SC;
+		int n = reachableEntities.size() + 1;
+		int i = 1;
+		while (i <= n) {
+		    int q = (identity() + i) % n + 1;
+			if (LOG_ON && MUTEX.isDebugEnabled()) {
+				MUTEX.debug(Log.computeServerLogMessage(this, "identity=" + identity() + ", q=" + q));
+			}
+		    int demQ = this.dem.getOrDefault(q, 0);
+		    int jetQ = this.jet.getEntry(q);
+		    /*
+			if (demQ > jetQ && this.jet != null) {
+		    redundant null check
+		     */
+			if (demQ > jetQ) {
+				sendMutexToken(q);
+				assert invariant();
+				return;
+			}
+			i++;
+		}
+		assert invariant();
+	}
+
+	/**
+	 * Receive mutex request token content.
+	 *
+	 * @param content the content
+	 */
+	public synchronized void receiveMutexRequestTokenContent(final MutexRequestTokenContent content) {
+		if (LOG_ON && MUTEX.isTraceEnabled()) {
+			MUTEX.trace(Log.computeServerLogMessage(this, "receives token request: " + content));
+		}
+		int q = content.getSender();
+		int nsQ = content.getNs();
+		int demQ = this.dem.getOrDefault(q, 0);
+	    this.dem.put(q, Math.max(demQ, nsQ));
+	    /*
+		if (this.jet != null && this.mutexStatus != MutexStatus.DANS_SC) {
+		hypothèse suivante: le serveur qui possède le jeton sort de section critique dès qu'il reçoit une demande
+	     */
+		if (this.jet != null) {
+				exitCriticalSection();
+		}
+		assert invariant();
+	}
+
+	/**
+	 * Receive mutex send token content.
+	 *
+	 * @param content the content
+	 */
+	public synchronized void receiveMutexSendTokenContent(final MutexSendTokenContent content) {
+		if (LOG_ON && MUTEX.isTraceEnabled()) {
+			MUTEX.trace(Log.computeServerLogMessage(this, "receives token: " + content));
+		}
+		this.jet = new MutexToken(content.getToken());
+		this.mutexStatus = MutexStatus.DANS_SC;
+		if (LOG_ON && MUTEX.isTraceEnabled()) {
+			MUTEX.trace(Log.computeServerLogMessage(this, "dans la section critique"));
 		}
 		assert invariant();
 	}
@@ -839,4 +983,39 @@ public class Server implements Entity {
 		return win;
 	}
 
+	/**
+	 * Gets dem.
+	 *
+	 * @return the dem
+	 */
+	public Map<Integer, Integer> getDem() {
+		return dem;
+	}
+
+	/**
+	 * Gets token.
+	 *
+	 * @return the token
+	 */
+	public MutexToken getJet() {
+		return jet;
+	}
+
+	/**
+	 * Gets mutex status.
+	 *
+	 * @return the mutex status
+	 */
+	public MutexStatus getMutexStatus() {
+		return mutexStatus;
+	}
+
+	/**
+	 * Gets clock.
+	 *
+	 * @return the clock
+	 */
+	public int getNs() {
+		return ns;
+	}
 }
