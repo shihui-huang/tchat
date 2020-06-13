@@ -35,14 +35,12 @@ import java.util.Objects;
 import chat.common.Action;
 import chat.server.Server;
 import chat.server.algorithms.election.ElectionAction;
+import chat.server.algorithms.mutex.MutexAction;
 import chat.server.algorithms.topology.TopologyAction;
 
 /**
  * This Enumeration type declares the algorithms of the server. For now, there
- * is only one algorithm: the algorithm for the election.
- * 
- * TODO add new algorithms when necessary, update the description of the
- * enumeration, and remove this comment.
+ * is only one algorithm: the algorithm for the election and for the mutex
  * 
  * @author Denis Conan
  */
@@ -54,8 +52,12 @@ public enum ServerAlgorithm {
 	/**
 	 * the election algorithm.
 	 */
-	ALGORITHM_ELECTION(ElectionAction.values());
-	
+	ALGORITHM_ELECTION(ElectionAction.values()),
+	/**
+	 * the mutex algorithm.
+	 */
+	ALGORITHM_MUTEX(MutexAction.values());
+
 	/**
 	 * collection of the actions of this algorithm enumerator of the server. The
 	 * collection is built at class loading by parsing the algorithms; it is thus
