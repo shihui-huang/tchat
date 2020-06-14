@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 
 import static chat.common.Log.*;
 
-public class TestScenarioMutex extends Scenario {
+public class TestScenarioMutexSansConcurrence extends Scenario {
     @Test
     @Override
     public void constructAndRun() throws Exception {
