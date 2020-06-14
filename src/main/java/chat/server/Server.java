@@ -906,9 +906,6 @@ public class Server implements Entity {
 		int i = 1;
 		while (i <= n) {
 		    int q = (identity() + i) % n + 1;
-			if (LOG_ON && MUTEX.isDebugEnabled()) {
-				MUTEX.debug(Log.computeServerLogMessage(this, "identity=" + identity() + ", q=" + q));
-			}
 		    int demQ = this.dem.getOrDefault(q, 0);
 		    int jetQ = this.jet.getEntry(q);
 		    /*
